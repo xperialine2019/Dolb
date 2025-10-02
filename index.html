@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Тест на долбоёбизм</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      background: #fff9f9;
+      color: #2c3e50;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      padding-bottom: 40px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      margin: 20px 0;
+      color: #e74c3c;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    .meme {
+      width: 100%;
+      border-radius: 16px;
+      margin: 20px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      margin: 20px 0;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+    #start-btn {
+      background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    }
+    #restart-btn {
+      background: linear-gradient(135deg, #4ecdc4, #556270);
+    }
+    button:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+    .progress {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #2c3e50;
+    }
+    .progress-bar {
+      height: 12px;
+      background: #ecf0f1;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+    #progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff6b6b, #ff8e53);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+    #question-text {
+      font-size: 22px;
+      margin: 20px 0;
+      text-align: center;
+      padding: 0 10px;
+    }
+    .answer-btn {
+      background: white;
+      color: #e74c3c;
+      border: 2px solid #ff6b6b;
+      font-size: 17px;
+      text-align: left;
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin: 10px 0;
+      font-weight: 600;
+    }
+    .answer-btn:hover {
+      background: #fff0f0;
+    }
+    #result-text {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 19px;
+      line-height: 1.6;
+    }
+    #result-meme {
+      width: 100%;
+      border-radius: 16px;
+      margin: 20px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .percentage {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <div id="start-screen">
+      <h1>🤪 ТЕСТ НА ДОЛБОЁБИЗМ</h1>
+      <img src="https://i.imgur.com/5Vz2Q7T.jpeg" alt="Мем" class="meme">
+      <p>20 вопросов, которые раскроют твою суть!</p>
+      <button id="start-btn">🚀 НАЧАТЬ ТЕСТ</button>
+    </div>
+
+    <div id="question-screen" style="display:none;">
+      <div class="progress">Вопрос <span id="q-num">1</span> из 20</div>
+      <div class="progress-bar"><div id="progress-fill"></div></div>
+      <h2 id="question-text">Какой-то вопрос?</h2>
+      <div id="answers"></div>
+    </div>
+
+    <div id="result-screen" style="display:none;">
+      <h1>🎪 РЕЗУЛЬТАТ</h1>
+      <img id="result-meme" src="" alt="Результат">
+      <div id="result-text"></div>
+      <button id="restart-btn">🔄 Пройти снова</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {text:"💔 Что делать после первого свидания?",answers:[{text:"Написать сразу 10 сообщений",score:10},{text:"Ждать 3 дня по правилам",score:5},{text:"Добавить в все соцсети",score:8},{text:"Рассказать друзьям все детали",score:7}]},
+      {text:"❤️ Как вы решаете конфликты?",answers:[{text:"Кричу и бью посуду",score:10},{text:"Молчу неделями",score:8},{text:"Ищу компромисс",score:2},{text:"Выкладываю в Instagram",score:9}]},
+      {text:"💑 Ваша реакция на 'нам нужно поговорить'?",answers:[{text:"Блокирую везде",score:10},{text:"Пишу предсмертное сообщение",score:9},{text:"Спокойно готовлюсь к разговору",score:1},{text:"Сразу пишу друзьям",score:7}]},
+      {text:"👫 Как вы выбираете партнера?",answers:[{text:"По знаку зодиака",score:9},{text:"По количеству подписчиков",score:10},{text:"По характеру и интересам",score:1},{text:"По фото в купальнике",score:8}]},
+      {text:"💔 Что делать после расставания?",answers:[{text:"Писать бывшему каждую ночь",score:10},{text:"Выложить гневный пост",score:8},{text:"Удалить все фото",score:4},{text:"Заняться саморазвитием",score:1}]},
+      {text:"💍 Когда говорить 'Я тебя люблю'?",answers:[{text:"На первом свидании",score:10},{text:"После первой ночи",score:8},{text:"Через 3 месяца",score:3},{text:"Когда почувствую",score:1}]},
+      {text:"👨‍👩‍👧‍👦 Ваше отношение к браку?",answers:[{text:"Пережиток прошлого",score:6},{text:"Обязательно для всех",score:7},{text:"Личный выбор каждого",score:1},{text:"Только ради Instagram",score:10}]},
+      {text:"💰 Как тратите зарплату?",answers:[{text:"За первый день",score:10},{text:"На ненужные вещи",score:8},{text:"По бюджету",score:1},{text:"В казино",score:10}]},
+      {text:"💳 Ваше отношение к кредитам?",answers:[{text:"Беру на все подряд",score:10},{text:"Только на важное",score:3},{text:"Избегаю любой ценой",score:1},{text:"Беру чтобы похвастаться",score:9}]},
+      {text:"📈 Что делать с инвестициями?",answers:[{text:"Вложить в мемные токены",score:10},{text:"Спросить у блогера",score:8},{text:"Изучить тему",score:1},{text:"Проиграть в казино",score:10}]},
+      {text:"💸 Деньги с неба? Ваши действия!",answers:[{text:"Потратить за один день",score:10},{text:"Похвастаться в соцсетях",score:9},{text:"Отложить на будущее",score:1},{text:"Раздать друзьям",score:6}]},
+      {text:"🛍️ Шоппинг - это...",answers:[{text:"Спорт",score:9},{text:"Терапия",score:8},{text:"Необходимость",score:2},{text:"Повод для поста",score:10}]},
+      {text:"💵 Долги? Как относитесь?",answers:[{text:"Беру и забываю",score:10},{text:"Отдаю в последний момент",score:7},{text:"Стараюсь не иметь",score:1},{text:"Одалживаю у других",score:9}]},
+      {text:"🏦 Финансовая подушка?",answers:[{text:"Что это?",score:10},{text:"Бабушка дает",score:8},{text:"Есть 3 зарплаты",score:1},{text:"Кредитная карта",score:9}]},
+      {text:"🚗 Вы за рулем. Ваши действия?",answers:[{text:"Всегда сигналю",score:10},{text:"Объезжаю пробки по тротуару",score:9},{text:"Соблюдаю правила",score:1},{text:"Снимаю для TikTok",score:10}]},
+      {text:"🍕 Последний кусок пиццы...",answers:[{text:"Хватаю без спроса",score:10},{text:"Дерусь за него",score:9},{text:"Предлагаю другим",score:1},{text:"Фоткаю для истории",score:8}]},
+      {text:"📱 Телефон в кинотеатре?",answers:[{text:"Смотрю видео без наушников",score:10},{text:"Громко разговариваю",score:9},{text:"Ставлю на беззвучный",score:1},{text:"Снимаю селфи со вспышкой",score:10}]},
+      {text:"🚭 Надпись 'Не курить'...",answers:[{text:"Игнорирую",score:10},{text:"Курю и спорю",score:9},{text:"Ищу разрешенное место",score:1},{text:"Снимаю挑戰视频",score:8}]},
+      {text:"👮‍♂️ Вас останавливает полиция",answers:[{text:"Начинаю спорить",score:10},{text:"Пытаюсь дать взятку",score:10},{text:"Спокойно общаюсь",score:1},{text:"Снимаю на камеру",score:7}]},
+      {text:"🎉 Ваше поведение на вечеринке",answers:[{text:"Я - центр внимания",score:9},{text:"Ломаю мебель",score:10},{text:"Общаюсь скромно",score:1},{text:"Разливаю drinks на столе",score:8}]}
+    ];
+
+    let currentQuestion = 0;
+    let totalScore = 0;
+
+    const startScreen = document.getElementById('start-screen');
+    const questionScreen = document.getElementById('question-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const qNumEl = document.getElementById('q-num');
+    const questionTextEl = document.getElementById('question-text');
+    const answersEl = document.getElementById('answers');
+    const progressFill = document.getElementById('progress-fill');
+
+    document.getElementById('start-btn').addEventListener('click', startTest);
+    document.getElementById('restart-btn').addEventListener('click', startTest);
+
+    function startTest() {
+      currentQuestion = 0;
+      totalScore = 0;
+      startScreen.style.display = 'block';
+      questionScreen.style.display = 'none';
+      resultScreen.style.display = 'none';
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (currentQuestion >= questions.length) {
+        showResult();
+        return;
+      }
+
+      const q = questions[currentQuestion];
+      qNumEl.textContent = currentQuestion + 1;
+      questionTextEl.textContent = q.text;
+
+      const progress = (currentQuestion / questions.length) * 100;
+      progressFill.style.width = `${progress}%`;
+
+      answersEl.innerHTML = '';
+      q.answers.forEach(answer => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = answer.text;
+        btn.onclick = () => {
+          totalScore += answer.score;
+          currentQuestion++;
+          showQuestion();
+        };
+        answersEl.appendChild(btn);
+      });
+
+      startScreen.style.display = 'none';
+      questionScreen.style.display = 'block';
+    }
+
+    function showResult() {
+      const percentage = Math.min(100, Math.round((totalScore / 200) * 100));
+      let resultText, memeUrl;
+      if (percentage <= 20) {
+        resultText = "ГЕНИЙ ЧИСТОЙ ВОДЫ! 🧠\nВы почти святой!";
+        memeUrl = 'https://i.imgur.com/4M5b2nT.jpeg';
+      } else if (percentage <= 50) {
+        resultText = "УМНИК С ОГРОМНЫМ ПОТЕНЦИАЛОМ! 👍\nВы разумны, но иногда поддаётесь глупостям.";
+        memeUrl = 'https://i.imgur.com/7N3c1vS.jpeg';
+      } else if (percentage <= 80) {
+        resultText = "ТРЕВОГА! НУЖНА ПОМОЩЬ! ⚠️\nЯвные признаки долбоёбизма. Пересмотрите принципы!";
+        memeUrl = 'https://i.imgur.com/2P9z8qM.jpeg';
+      } else {
+        resultText = "КРИТИЧЕСКИЙ УРОВЕНЬ! 🚨\nВАШ УРОВЕНЬ ДОЛБОЁБИЗМА ЗАШКАЛИВАЕТ! СРОЧНО К СПЕЦИАЛИСТУ! (шутка)";
+        memeUrl = 'https://i.imgur.com/1Q4vD5x.jpeg';
+      }
+
+      document.getElementById('result-meme').src = memeUrl;
+      document.getElementById('result-text').innerHTML = `
+        <div class="percentage">${getEmoji(percentage)} ${percentage}%</div>
+        <div><b>${resultText}</b></div>
+        <div style="margin-top:15px; font-size:14px; color:#7f8c8d;">
+          Тест создан в юмористических целях 😄
+        </div>
+      `;
+
+      questionScreen.style.display = 'none';
+      resultScreen.style.display = 'block';
+
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
+      }
+    }
+
+    function getEmoji(perc) {
+      if (perc <= 20) return '🟢';
+      if (perc <= 50) return '🟡';
+      if (perc <= 80) return '🟠';
+      return '🔴';
+    }
+
+    // Начинаем с экрана старта
+    startScreen.style.display = 'block';
+  </script>
+</body>
+</html>
