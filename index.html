@@ -162,9 +162,9 @@
       {text:"🚗 Вы за рулем. Ваши действия?",answers:[{text:"Всегда сигналю",score:10},{text:"Объезжаю пробки по тротуару",score:9},{text:"Соблюдаю правила",score:1},{text:"Снимаю для TikTok",score:10}]},
       {text:"🍕 Последний кусок пиццы...",answers:[{text:"Хватаю без спроса",score:10},{text:"Дерусь за него",score:9},{text:"Предлагаю другим",score:1},{text:"Фоткаю для истории",score:8}]},
       {text:"📱 Телефон в кинотеатре?",answers:[{text:"Смотрю видео без наушников",score:10},{text:"Громко разговариваю",score:9},{text:"Ставлю на беззвучный",score:1},{text:"Снимаю селфи со вспышкой",score:10}]},
-      {text:"🚭 Надпись 'Не курить'...",answers:[{text:"Игнорирую",score:10},{text:"Курю и спорю",score:9},{text:"Ищу разрешенное место",score:1},{text:"Снимаю табличку",score:8}]},
+      {text:"🚭 Надпись 'Не курить'...",answers:[{text:"Игнорирую",score:10},{text:"Курю и спорю",score:9},{text:"Ищу разрешенное место",score:1},{text:"Снимаю挑戰视频",score:8}]},
       {text:"👮‍♂️ Вас останавливает полиция",answers:[{text:"Начинаю спорить",score:10},{text:"Пытаюсь дать взятку",score:10},{text:"Спокойно общаюсь",score:1},{text:"Снимаю на камеру",score:7}]},
-      {text:"🎉 Ваше поведение на вечеринке",answers:[{text:"Я - центр внимания",score:9},{text:"Ломаю мебель",score:10},{text:"Общаюсь скромно",score:1},{text:"Разливаю напитки на столе",score:8}]}
+      {text:"🎉 Ваше поведение на вечеринке",answers:[{text:"Я - центр внимания",score:9},{text:"Ломаю мебель",score:10},{text:"Общаюсь скромно",score:1},{text:"Разливаю drinks на столе",score:8}]}
     ];
 
     let currentQuestion = 0;
@@ -184,18 +184,13 @@
     function startTest() {
       currentQuestion = 0;
       totalScore = 0;
-      startScreen.style.display = 'block';
-      questionScreen.style.display = 'none';
+      startScreen.style.display = 'none';
       resultScreen.style.display = 'none';
+      questionScreen.style.display = 'block';
       showQuestion();
     }
 
     function showQuestion() {
-      if (currentQuestion >= questions.length) {
-        showResult();
-        return;
-      }
-
       const q = questions[currentQuestion];
       qNumEl.textContent = currentQuestion + 1;
       questionTextEl.textContent = q.text;
@@ -211,13 +206,14 @@
         btn.onclick = () => {
           totalScore += answer.score;
           currentQuestion++;
-          showQuestion();
+          if (currentQuestion >= questions.length) {
+            showResult();
+          } else {
+            showQuestion();
+          }
         };
         answersEl.appendChild(btn);
       });
-
-      startScreen.style.display = 'none';
-      questionScreen.style.display = 'block';
     }
 
     function showResult() {
@@ -225,16 +221,16 @@
       let resultText, memeUrl;
       if (percentage <= 20) {
         resultText = "ГЕНИЙ ЧИСТОЙ ВОДЫ! 🧠\nВы почти святой!";
-        memeUrl ='images/result_low.jpg';
+        memeUrl = 'images/result_low.jpeg';
       } else if (percentage <= 50) {
         resultText = "УМНИК С ОГРОМНЫМ ПОТЕНЦИАЛОМ! 👍\nВы разумны, но иногда поддаётесь глупостям.";
-        memeUrl = 'images/result_medium.jpg';
+        memeUrl = 'images/result_medium.jpeg';
       } else if (percentage <= 80) {
         resultText = "ТРЕВОГА! НУЖНА ПОМОЩЬ! ⚠️\nЯвные признаки долбоёбизма. Пересмотрите принципы!";
-        memeUrl = 'images/result_high';
+        memeUrl = 'images/result_high.jpeg';
       } else {
         resultText = "КРИТИЧЕСКИЙ УРОВЕНЬ! 🚨\nВАШ УРОВЕНЬ ДОЛБОЁБИЗМА ЗАШКАЛИВАЕТ! СРОЧНО К СПЕЦИАЛИСТУ! (шутка)";
-        memeUrl = 'images/result_extreme';
+        memeUrl = 'images/result_extreme.jpeg';
       }
 
       document.getElementById('result-meme').src = memeUrl;
@@ -261,7 +257,7 @@
       return '🔴';
     }
 
-    // Начинаем с экрана старта
+    // Показываем стартовый экран при загрузке
     startScreen.style.display = 'block';
   </script>
 </body>
